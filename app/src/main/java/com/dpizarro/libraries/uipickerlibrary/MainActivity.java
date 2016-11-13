@@ -1,8 +1,5 @@
 package com.dpizarro.libraries.uipickerlibrary;
 
-import com.dpizarro.uipicker.library.picker.PickerUI;
-import com.dpizarro.uipicker.library.picker.PickerUISettings;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
+
+import com.dpizarro.uipicker.library.picker.PickerUI;
+import com.dpizarro.uipicker.library.picker.PickerUISettings;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +47,6 @@ public class MainActivity extends ActionBarActivity {
         mPickerUI.setBackgroundColorPanel(R.color.background_picker);
         mPickerUI.setLinesColor(R.color.background_picker);
         mPickerUI.setItemsClickables(false);
-        mPickerUI.setAutoDismiss(false);
 
         mPickerUI.setOnClickItemPickerUIListener(
                 new PickerUI.PickerUIItemClickListener() {
@@ -84,10 +83,8 @@ public class MainActivity extends ActionBarActivity {
                 PickerUISettings pickerUISettings =
                         new PickerUISettings.Builder().withItems(options)
                                                       .withBackgroundColor(randomColor)
-                                                      .withAutoDismiss(mAutoDismiss.isChecked())
                                                       .withItemsClickables(
                                                               mItemsClickables.isChecked())
-                                                      .withUseBlur(mUseBlur.isChecked())
                                                       .build();
 
                 mPickerUI.setSettings(pickerUISettings);

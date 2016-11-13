@@ -1,13 +1,8 @@
 package com.dpizarro.uipicker.library.picker;
 
-import com.dpizarro.uipicker.library.R;
-import com.dpizarro.uipicker.library.blur.PickerUIBlur;
-import com.dpizarro.uipicker.library.blur.PickerUIBlurHelper;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -15,9 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.dpizarro.uipicker.library.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,25 +33,23 @@ import java.util.List;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurFinishedListener {
+public class PickerUI extends LinearLayout {
 
     private static final String LOG_TAG = PickerUI.class.getSimpleName();
 
-    private boolean autoDismiss     = PickerUISettings.DEFAULT_AUTO_DISMISS;
     private boolean itemsClickables = PickerUISettings.DEFAULT_ITEMS_CLICKABLES;
 
     private PickerUIItemClickListener mPickerUIListener;
-    private PickerUIListView mPickerUIListView;
-    private View mHiddenPanelPickerUI;
-    private Context mContext;
-    private List<String> items;
-    private int position;
-    private PickerUIBlurHelper mPickerUIBlurHelper;
-    private int backgroundColorPanel;
-    private int colorLines;
-    private int mColorTextCenterListView;
-    private int mColorTextNoCenterListView;
-    private PickerUISettings mPickerUISettings;
+    private PickerUIListView          mPickerUIListView;
+    private Context                   mContext;
+    private List<String>              items;
+    private RelativeLayout            mMainLayoutPickerUI;
+    private int                       position;
+    private int                       backgroundColorPanel;
+    private int                       colorLines;
+    private int                       mColorTextCenterListView;
+    private int                       mColorTextNoCenterListView;
+    private PickerUISettings          mPickerUISettings;
 
     /**
      * Default constructor
@@ -65,7 +59,8 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         mContext = context;
         if (isInEditMode()) {
             createEditModeView();
-        } else {
+        }
+        else {
             createView(null);
         }
     }
@@ -78,7 +73,8 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         mContext = context;
         if (isInEditMode()) {
             createEditModeView();
-        } else {
+        }
+        else {
             createView(attrs);
             getAttributes(attrs);
         }
@@ -92,7 +88,8 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         mContext = context;
         if (isInEditMode()) {
             createEditModeView();
-        } else {
+        }
+        else {
             createView(attrs);
             getAttributes(attrs);
         }
@@ -103,21 +100,19 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
      */
     private void createEditModeView() {
         LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.pickerui, this, true);
     }
 
 
     private void createView(AttributeSet attrs) {
         LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.pickerui, this, true);
-        mHiddenPanelPickerUI = view.findViewById(R.id.hidden_panel);
         mPickerUIListView = (PickerUIListView) view.findViewById(R.id.picker_ui_listview);
+        mMainLayoutPickerUI = (RelativeLayout) view.findViewById(R.id.picker_main_layout);
 
         setItemsClickables(itemsClickables);
-        mPickerUIBlurHelper = new PickerUIBlurHelper(mContext, attrs);
-        mPickerUIBlurHelper.setBlurFinishedListener(this);
     }
 
     /**
@@ -128,22 +123,19 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
 
         if (typedArray != null) {
             try {
-                autoDismiss = typedArray
-                        .getBoolean(R.styleable.PickerUI_autoDismiss,
-                                PickerUISettings.DEFAULT_AUTO_DISMISS);
                 itemsClickables = typedArray
-                        .getBoolean(R.styleable.PickerUI_itemsClickables,
-                                PickerUISettings.DEFAULT_ITEMS_CLICKABLES);
+                    .getBoolean(R.styleable.PickerUI_itemsClickables,
+                        PickerUISettings.DEFAULT_ITEMS_CLICKABLES);
                 backgroundColorPanel = typedArray.getColor(R.styleable.PickerUI_backgroundColor,
-                        getResources().getColor(R.color.background_panel_pickerui));
+                    getResources().getColor(R.color.background_panel_pickerui));
                 colorLines = typedArray.getColor(R.styleable.PickerUI_linesCenterColor,
-                        getResources().getColor(R.color.lines_panel_pickerui));
+                    getResources().getColor(R.color.lines_panel_pickerui));
                 mColorTextCenterListView = typedArray
-                        .getColor(R.styleable.PickerUI_textCenterColor,
-                                getResources().getColor(R.color.text_center_pickerui));
+                    .getColor(R.styleable.PickerUI_textCenterColor,
+                        getResources().getColor(R.color.text_center_pickerui));
                 mColorTextNoCenterListView = typedArray
-                        .getColor(R.styleable.PickerUI_textNoCenterColor,
-                                getResources().getColor(R.color.text_no_center_pickerui));
+                    .getColor(R.styleable.PickerUI_textNoCenterColor,
+                        getResources().getColor(R.color.text_no_center_pickerui));
 
                 int idItems;
                 idItems = typedArray.getResourceId(R.styleable.PickerUI_entries, -1);
@@ -172,18 +164,13 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
     }
 
     /**
-     * Slide the panel depending depending on the current state.
+     * Slide the panel depending on the current state.
      * If slide up, the position is the value selected.
      *
      * @param position the position to set in the center of the panel.
      */
     public void slide(final int position) {
-        if (!isPanelShown()) {
-            slideUp(position);
-        } else {
-            // Hide the Panel
-            hidePanelPickerUI();
-        }
+        slideUp(position);
     }
 
     /**
@@ -193,16 +180,11 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
      */
     public void slide(SLIDE slide) {
         if (slide == SLIDE.UP) {
-            if (!isPanelShown()) {
-                int position = 0;
-                if (items != null) {
-                    position = items.size() / 2;
-                }
-                slideUp(position);
+            int position = 0;
+            if (items != null) {
+                position = items.size() / 2;
             }
-        } else {
-            // Hide the Panel
-            hidePanelPickerUI();
+            slideUp(position);
         }
     }
 
@@ -214,46 +196,7 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
     private void slideUp(int position) {
         //Render to do the blur effect
         this.position = position;
-        mPickerUIBlurHelper.render();
-    }
-
-    /**
-     * Hide the panel and clear blur image.
-     */
-    private void hidePanelPickerUI() {
-        Animation bottomDown = AnimationUtils
-                .loadAnimation(mContext, R.anim.picker_panel_bottom_down);
-        mHiddenPanelPickerUI.startAnimation(bottomDown);
-
-        bottomDown.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-                // Hide the panel
-                mHiddenPanelPickerUI.setVisibility(View.GONE);
-
-                // Clear blur image.
-                mPickerUIBlurHelper.handleRecycle();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-
-    }
-
-    /**
-     * Method to set if hide the panel when you click an item
-     *
-     * @param autoDismiss the behaviour selected to hide the panel
-     */
-    public void setAutoDismiss(boolean autoDismiss) {
-        this.autoDismiss = autoDismiss;
+        showPanelPickerUI();
     }
 
     /**
@@ -291,10 +234,6 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         setColorTextNoCenter(mColorTextNoCenterListView);
     }
 
-    public boolean isPanelShown() {
-        return mHiddenPanelPickerUI.getVisibility() == View.VISIBLE;
-    }
-
     /**
      * Method to set items to show in panel.
      * In this method, by default, the 'which' is 0 and the position is the half of the elements.
@@ -320,79 +259,6 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
             this.items = items;
             mPickerUIListView.setItems(context, items, which, position, itemsClickables);
             setTextColorsListView();
-        }
-    }
-
-    /**
-     * This method will be run after you have the bitmap with the blur effect done (or not).
-     */
-    @Override
-    public void onBlurFinished(Bitmap bitmapWithBlur) {
-
-        if (bitmapWithBlur != null) {
-            mPickerUIBlurHelper.showBlurImage(bitmapWithBlur);
-        }
-
-        // Show the panel
-        showPanelPickerUI();
-    }
-
-    /**
-     * Method to set the use of blur effect
-     *
-     * @param useBlur if want to use blur
-     */
-    public void setUseBlur(boolean useBlur) {
-        if (mPickerUIBlurHelper != null) {
-            mPickerUIBlurHelper.setUseBlur(useBlur);
-        }
-    }
-
-    /**
-     * Method to set the use of renderScript algorithm
-     *
-     * @param useRenderScript if want to use renderScript algorithm
-     */
-    public void setUseRenderScript(boolean useRenderScript) {
-        if (mPickerUIBlurHelper != null) {
-            mPickerUIBlurHelper.setUseRenderScript(useRenderScript);
-        }
-    }
-
-    /**
-     * Apply custom down scale factor
-     *
-     * By default down scale factor is set to {@link PickerUIBlur#MIN_DOWNSCALE}
-     *
-     * @param downScaleFactor Factor customized down scale factor, must be at least 1.0
-     */
-    public void setDownScaleFactor(float downScaleFactor) {
-        if (mPickerUIBlurHelper != null) {
-            mPickerUIBlurHelper.setDownScaleFactor(downScaleFactor);
-        }
-    }
-
-    /**
-     * Select your preferred blur radius to apply
-     *
-     * By default blur radius is set to {@link PickerUIBlur#MIN_BLUR_RADIUS}
-     *
-     * @param radius The radius to blur the image, radius must be at least 1
-     */
-    public void setBlurRadius(int radius) {
-        if (mPickerUIBlurHelper != null) {
-            mPickerUIBlurHelper.setBlurRadius(radius);
-        }
-    }
-
-    /**
-     * Select the color filter to the blur effect
-     *
-     * @param filterColor The color to overlay
-     */
-    public void setFilterColor(int filterColor) {
-        if (mPickerUIBlurHelper != null) {
-            mPickerUIBlurHelper.setFilterColor(filterColor);
         }
     }
 
@@ -439,28 +305,13 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
      * selected.
      */
     private void showPanelPickerUI() {
-        mHiddenPanelPickerUI.setVisibility(View.VISIBLE);
         setBackgroundPanel();
         setBackgroundLines();
-        Animation bottomUp = AnimationUtils.loadAnimation(mContext, R.anim.picker_panel_bottom_up);
-        mHiddenPanelPickerUI.startAnimation(bottomUp);
-        bottomUp.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                if (mPickerUIListView != null && mPickerUIListView.getPickerUIAdapter() != null) {
-                    mPickerUIListView.getPickerUIAdapter().handleSelectEvent(position + 2);
-                    mPickerUIListView.setSelection(position);
-                }
-            }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
+        if (mPickerUIListView != null && mPickerUIListView.getPickerUIAdapter() != null) {
+            mPickerUIListView.getPickerUIAdapter().handleSelectEvent(position + 2);
+            mPickerUIListView.setSelection(position);
+        }
     }
 
 
@@ -471,7 +322,7 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         } catch (Resources.NotFoundException e) {
             color = backgroundColorPanel;
         }
-        mHiddenPanelPickerUI.setBackgroundColor(color);
+        mMainLayoutPickerUI.setBackgroundColor(color);
     }
 
     private void setBackgroundLines() {
@@ -483,10 +334,10 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         }
 
         //Top line
-        mHiddenPanelPickerUI.findViewById(R.id.picker_line_top).setBackgroundColor(color);
+        mMainLayoutPickerUI.findViewById(R.id.picker_line_top).setBackgroundColor(color);
 
         //Bottom line
-        mHiddenPanelPickerUI.findViewById(R.id.picker_line_bottom).setBackgroundColor(color);
+        mMainLayoutPickerUI.findViewById(R.id.picker_line_bottom).setBackgroundColor(color);
     }
 
     /**
@@ -498,21 +349,18 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         this.mPickerUIListener = listener;
 
         mPickerUIListView.setOnClickItemPickerUIListener(
-                new PickerUIListView.PickerUIItemClickListener() {
-                    @Override
-                    public void onItemClickItemPickerUI(int which, int position,
-                            String valueResult) {
-                        if (autoDismiss) {
-                            slide(position);
-                        }
+            new PickerUIListView.PickerUIItemClickListener() {
+                @Override
+                public void onItemClickItemPickerUI(int which, int position,
+                                                    String valueResult) {
 
-                        if (mPickerUIListener == null) {
-                            throw new IllegalStateException(
-                                    "You must assign a valid PickerUI.PickerUIItemClickListener first!");
-                        }
-                        mPickerUIListener.onItemClickPickerUI(which, position, valueResult);
+                    if (mPickerUIListener == null) {
+                        throw new IllegalStateException(
+                            "You must assign a valid PickerUI.PickerUIItemClickListener first!");
                     }
-                });
+                    mPickerUIListener.onItemClickPickerUI(which, position, valueResult);
+                }
+            });
     }
 
     /**
@@ -528,12 +376,6 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         setBackgroundColorPanel(pickerUISettings.getBackgroundColor());
         setLinesColor(pickerUISettings.getLinesColor());
         setItemsClickables(pickerUISettings.areItemsClickables());
-        setUseBlur(pickerUISettings.isUseBlur());
-        setUseRenderScript(pickerUISettings.isUseBlurRenderscript());
-        setAutoDismiss(pickerUISettings.isAutoDismiss());
-        setBlurRadius(pickerUISettings.getBlurRadius());
-        setDownScaleFactor(pickerUISettings.getBlurDownScaleFactor());
-        setFilterColor(pickerUISettings.getBlurFilterColor());
     }
 
     /**
@@ -546,7 +388,6 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
         bundle.putParcelable("instanceState", super.onSaveInstanceState());
         bundle.putParcelable("stateSettings", mPickerUISettings);
         //save everything
-        bundle.putBoolean("stateIsPanelShown", isPanelShown());
         bundle.putInt("statePosition", mPickerUIListView.getItemInListCenter());
         return bundle;
     }
@@ -561,34 +402,31 @@ public class PickerUI extends RelativeLayout implements PickerUIBlurHelper.BlurF
             Bundle bundle = (Bundle) state;
             //load everything
             PickerUISettings pickerUISettings = bundle.getParcelable("stateSettings");
-            if(pickerUISettings!=null){
+            if (pickerUISettings != null) {
                 setSettings(pickerUISettings);
             }
 
-            boolean stateIsPanelShown = bundle.getBoolean("stateIsPanelShown");
-            if (stateIsPanelShown) {
+            final int statePosition = bundle.getInt("statePosition");
 
-                final int statePosition = bundle.getInt("statePosition");
+            ViewTreeObserver observer = getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
 
-                ViewTreeObserver observer = getViewTreeObserver();
-                observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
+                    slideUp(statePosition);
 
-                        slideUp(statePosition);
-
-                        if (android.os.Build.VERSION.SDK_INT
-                                >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                            getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        } else {
-                            //noinspection deprecation
-                            getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        }
-
+                    if (android.os.Build.VERSION.SDK_INT
+                        >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                        getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
-                });
+                    else {
+                        //noinspection deprecation
+                        getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    }
 
-            }
+                }
+            });
+
             state = bundle.getParcelable("instanceState");
         }
         super.onRestoreInstanceState(state);

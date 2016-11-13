@@ -81,15 +81,9 @@
         android:layout_height="wrap_content"
         pickerui:backgroundColor="#4cffa5"
         pickerui:linesCenterColor="#3941ff"
-        pickerui:autoDismiss="true"
         pickerui:itemsClickables="true"
         pickerui:entries="@array/months"
         pickerui:textCenterColor="#000000"
-        pickerui:textNoCenterColor="#737373"
-        pickerui:blur="true"
-        pickerui:blur_downScaleFactor="@integer/blur_downscale_min"
-        pickerui:blur_FilterColor="#ff5e48"
-        pickerui:blur_radius="@integer/blur_radius_min"
-        pickerui:blur_use_renderscript="true"/>
+        pickerui:textNoCenterColor="#737373"/>
 
 </RelativeLayout>
