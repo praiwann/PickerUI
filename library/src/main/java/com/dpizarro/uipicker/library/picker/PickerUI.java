@@ -310,7 +310,15 @@ public class PickerUI extends LinearLayout {
 
         if (mPickerUIListView != null && mPickerUIListView.getPickerUIAdapter() != null) {
             mPickerUIListView.getPickerUIAdapter().handleSelectEvent(position + 2);
-            mPickerUIListView.setSelection(position);
+            mPickerUIListView.clearFocus();
+            mPickerUIListView.post(new Runnable() {
+                @Override
+                public void run() {
+//                    mPickerUIListView.requestFocusFromTouch();
+                    mPickerUIListView.setSelection(position);
+                    mPickerUIListView.requestFocus();
+                }
+            });
         }
     }
 
