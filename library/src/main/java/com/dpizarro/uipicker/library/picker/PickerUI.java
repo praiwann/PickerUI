@@ -314,14 +314,12 @@ public class PickerUI extends LinearLayout {
             mPickerUIListView.post(new Runnable() {
                 @Override
                 public void run() {
-//                    mPickerUIListView.requestFocusFromTouch();
                     mPickerUIListView.setSelection(position);
                     mPickerUIListView.requestFocus();
                 }
             });
         }
     }
-
 
     private void setBackgroundPanel() {
         int color;
