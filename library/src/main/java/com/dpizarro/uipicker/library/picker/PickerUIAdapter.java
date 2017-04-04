@@ -1,6 +1,7 @@
 package com.dpizarro.uipicker.library.picker;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -34,22 +35,23 @@ class PickerUIAdapter extends ArrayAdapter<String> {
 
     private static final String EMPTY_STRING = "";
 
-    private static final int ROTATION_CENTER        = 0;
-    private static final int ROTATION_TWICE_ABOVE   = -25;
-    private static final int ROTATION_FIRST         = -50;
-    private static final int ROTATION_BELOW         = 25;
-    private static final int ROTATION_TWICE_BELOW   = 50;
-    private static final int ROTATION_ABOVE_FAR     = -55;
-    private static final int ROTATION_BELOW_FAR     = 55;
+    private static final int ROTATION_CENTER      = 0;
+    private static final int ROTATION_TWICE_ABOVE = -25;
+    private static final int ROTATION_FIRST       = -50;
+    private static final int ROTATION_BELOW       = 25;
+    private static final int ROTATION_TWICE_BELOW = 50;
+    private static final int ROTATION_ABOVE_FAR   = -55;
+    private static final int ROTATION_BELOW_FAR   = 55;
 
-    private Context mContext;
+    private Context      mContext;
     private List<String> items;
-    private int centerPosition;
+    private int          centerPosition;
     private boolean itemsClickables = true;
     private SparseIntArray positionsNoClickables;
-    private int mColorTextCenter = -1;
-    private int mColorTextNoCenter = -1;
-    private boolean isInEditMode = false;
+    private int     mColorTextCenter   = -1;
+    private int     mColorTextNoCenter = -1;
+    private boolean isInEditMode       = false;
+    private Typeface mTypeFace;
 
     /**
      * Constructor to use the adapter.
@@ -64,12 +66,14 @@ class PickerUIAdapter extends ArrayAdapter<String> {
      * @param isInEditMode    to avoid to set styles.
      */
     public PickerUIAdapter(Context context, int resource, List<String> items, int position,
-            boolean itemsClickables,
-            boolean isInEditMode) {
+                           boolean itemsClickables,
+                           Typeface typeFace,
+                           boolean isInEditMode) {
         super(context, resource, items);
         this.mContext = context;
         this.itemsClickables = itemsClickables;
         this.isInEditMode = isInEditMode;
+        this.mTypeFace = typeFace;
         positionsNoClickables = new SparseIntArray(items.size());
         setItems(items, position);
         setPositonsNoClickables();
@@ -80,7 +84,7 @@ class PickerUIAdapter extends ArrayAdapter<String> {
 
         if (convertView == null) {
             LayoutInflater vi = (LayoutInflater) mContext.getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
+                Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.pickerui_item, parent, false);
         }
 
@@ -93,6 +97,10 @@ class PickerUIAdapter extends ArrayAdapter<String> {
          */
         if (!isInEditMode) {
             setTextItemStyle(textItem, position);
+        }
+
+        if (mTypeFace != null) {
+            textItem.setTypeface(mTypeFace);
         }
 
         return convertView;
@@ -111,27 +119,32 @@ class PickerUIAdapter extends ArrayAdapter<String> {
             setTextCenterColor(textItem);
 //            textItem.setRotationX(ROTATION_CENTER);
             textItem.setAlpha((float) 1.0);
-        } else if (position - 1 == centerPosition) {
+        }
+        else if (position - 1 == centerPosition) {
             textItem.setTextAppearance(mContext, R.style.PickerUI_Near_Center_Item);
             setTextNoCenterColor(textItem);
 //            textItem.setRotationX(ROTATION_TWICE_ABOVE);
             textItem.setAlpha((float) 1.0);
-        } else if (position - 2 == centerPosition) {
+        }
+        else if (position - 2 == centerPosition) {
             textItem.setTextAppearance(mContext, R.style.PickerUI_Far_Center_Item);
             setTextNoCenterColor(textItem);
 //            textItem.setRotationX(ROTATION_FIRST);
             textItem.setAlpha((float) 0.7);
-        } else if (position + 1 == centerPosition) {
+        }
+        else if (position + 1 == centerPosition) {
             textItem.setTextAppearance(mContext, R.style.PickerUI_Near_Center_Item);
             setTextNoCenterColor(textItem);
 //            textItem.setRotationX(ROTATION_BELOW);
             textItem.setAlpha((float) 1.0);
-        } else if (position + 2 == centerPosition) {
+        }
+        else if (position + 2 == centerPosition) {
             textItem.setTextAppearance(mContext, R.style.PickerUI_Far_Center_Item);
             setTextNoCenterColor(textItem);
 //            textItem.setRotationX(ROTATION_TWICE_BELOW);
             textItem.setAlpha((float) 0.7);
-        } else {
+        }
+        else {
 
 //            if (position < centerPosition) {
 //                textItem.setRotationX(ROTATION_BELOW_FAR);
@@ -187,7 +200,8 @@ class PickerUIAdapter extends ArrayAdapter<String> {
 
         if (position == -1) {
             centerPosition = 2;
-        } else {
+        }
+        else {
             centerPosition = position + 2;
         }
 
@@ -250,7 +264,7 @@ class PickerUIAdapter extends ArrayAdapter<String> {
 
     /**
      * This method indicates whether items can be clicked.
-     *
+     * <p>
      * if it is allowed that elements can be clicked, the first two positions and the last 2
      * positions can not be
      * pressed.
@@ -262,7 +276,8 @@ class PickerUIAdapter extends ArrayAdapter<String> {
     public boolean isEnabled(int position) {
         if (!itemsClickables) {
             return false;
-        } else {
+        }
+        else {
 
             boolean isClickable = positionsNoClickables.get(position, -1) == -1;
             return isClickable && super.isEnabled(position);

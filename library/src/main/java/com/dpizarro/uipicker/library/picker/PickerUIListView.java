@@ -1,9 +1,8 @@
 package com.dpizarro.uipicker.library.picker;
 
-import com.dpizarro.uipicker.library.R;
-
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,6 +10,8 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.dpizarro.uipicker.library.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,12 +35,12 @@ class PickerUIListView extends ListView {
 
     private final static int ROW_HEIGHT = 40;
     private PickerUIItemClickListener mItemClickListenerPickerUI;
-    private PickerUIAdapter mPickerUIAdapter;
+    private PickerUIAdapter           mPickerUIAdapter;
     private boolean scrollEnabled = false;
     private int lastPositionNotified;
     private int firstItem, scrollTop;
     private List<String> items;
-    private int which;
+    private int          which;
 
     /**
      * Default constructor
@@ -48,7 +49,8 @@ class PickerUIListView extends ListView {
         super(context);
         if (isInEditMode()) {
             createEditModeView(context);
-        } else {
+        }
+        else {
             init(items);
         }
     }
@@ -60,7 +62,8 @@ class PickerUIListView extends ListView {
         super(context, attrs);
         if (isInEditMode()) {
             createEditModeView(context);
-        } else {
+        }
+        else {
             init(items);
         }
     }
@@ -72,7 +75,8 @@ class PickerUIListView extends ListView {
         super(context, attrs, defStyle);
         if (isInEditMode()) {
             createEditModeView(context);
-        } else {
+        }
+        else {
             init(items);
         }
     }
@@ -86,7 +90,8 @@ class PickerUIListView extends ListView {
         super(context);
         if (isInEditMode()) {
             createEditModeView(context);
-        } else {
+        }
+        else {
             init(items);
         }
     }
@@ -106,7 +111,7 @@ class PickerUIListView extends ListView {
         }
         List<String> entriesList = Arrays.asList(entries);
         mPickerUIAdapter = new PickerUIAdapter(context, R.layout.pickerui_item, entriesList,
-                entriesList.size() / 2, true, true);
+            entriesList.size() / 2, true, null, true);
         setAdapter(mPickerUIAdapter);
         setSelection(entriesList.size() / 2);
     }
@@ -127,7 +132,8 @@ class PickerUIListView extends ListView {
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
                     getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                } else {
+                }
+                else {
                     //noinspection deprecation
                     getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
@@ -143,7 +149,8 @@ class PickerUIListView extends ListView {
                     if (scrollTop < -ROW_HEIGHT) {
                         mPickerUIAdapter.handleSelectEvent(firstItem + 1 + 2);
                         selectListItem(firstItem + 1);
-                    } else {
+                    }
+                    else {
                         selectListItem(firstItem);
                     }
                 }
@@ -151,7 +158,7 @@ class PickerUIListView extends ListView {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                    int totalItemCount) {
+                                 int totalItemCount) {
                 // save index and top position
                 View v = getChildAt(0);
 
@@ -184,11 +191,12 @@ class PickerUIListView extends ListView {
      * @param itemsClickables   indicates whether the items are clickable or not.
      */
     public void setItems(Context context, List<String> items, int idRequestPickerUI, int position,
-            boolean itemsClickables) {
+                         boolean itemsClickables, String typeFacePath) {
         this.items = items;
         this.which = idRequestPickerUI;
+        Typeface typeFace = FontCache.get(typeFacePath, context);
         mPickerUIAdapter = new PickerUIAdapter(context, R.layout.pickerui_item, items, position,
-                itemsClickables, false);
+            itemsClickables, typeFace, false);
         setAdapter(mPickerUIAdapter);
     }
 
@@ -212,10 +220,10 @@ class PickerUIListView extends ListView {
                     //We need to give the adapter time to draw the views
                     if (mItemClickListenerPickerUI == null) {
                         throw new IllegalStateException(
-                                "You must assign a valid PickerUIListView.PickerUIItemClickListener first!");
+                            "You must assign a valid PickerUIListView.PickerUIItemClickListener first!");
                     }
                     mItemClickListenerPickerUI
-                            .onItemClickItemPickerUI(which, position, items.get(position));
+                        .onItemClickItemPickerUI(which, position, items.get(position));
 
                 }
             }, 200);

@@ -49,6 +49,7 @@ public class PickerUI extends LinearLayout {
     private int                       colorLines;
     private int                       mColorTextCenterListView;
     private int                       mColorTextNoCenterListView;
+    private String                    typeFacePath;
     private PickerUISettings          mPickerUISettings;
 
     /**
@@ -126,6 +127,7 @@ public class PickerUI extends LinearLayout {
                 itemsClickables = typedArray
                     .getBoolean(R.styleable.PickerUI_itemsClickables,
                         PickerUISettings.DEFAULT_ITEMS_CLICKABLES);
+                typeFacePath = typedArray.getString(R.styleable.PickerUI_typeFacePath);
                 backgroundColorPanel = typedArray.getColor(R.styleable.PickerUI_backgroundColor,
                     getResources().getColor(R.color.background_panel_pickerui));
                 colorLines = typedArray.getColor(R.styleable.PickerUI_linesCenterColor,
@@ -257,9 +259,18 @@ public class PickerUI extends LinearLayout {
     public void setItems(Context context, List<String> items, int which, int position) {
         if (items != null) {
             this.items = items;
-            mPickerUIListView.setItems(context, items, which, position, itemsClickables);
+            mPickerUIListView.setItems(context, items, which, position, itemsClickables, typeFacePath);
             setTextColorsListView();
         }
+    }
+
+    /**
+     * Get position of current item
+     *
+     * @return [position] of current item
+     */
+    public int getItemPosition() {
+        return this.position;
     }
 
     /**
